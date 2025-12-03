@@ -10,10 +10,8 @@ import { useCoupons } from './hooks/useCoupons';
 import { useNotifications } from './hooks/useNotifications';
 import { useDebounce } from './hooks/useDebounce';
 import { calculateCartTotal } from './utils/calculators';
-import {
-  formatPrice as formatPriceUtil,
-  getRemainingStock,
-} from './utils/formatters';
+import { formatPrice as formatPriceUtil } from './utils/formatters';
+import { getRemainingStock } from './models/cart';
 
 const App = () => {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
@@ -68,7 +66,7 @@ const App = () => {
 
   const handleAddToCart = useCallback(
     (product: ProductWithUI) => {
-      const remainingStock = getRemainingStock(product, cart);
+      const remainingStock = getRemainingStock({ cart, product });
       if (remainingStock <= 0) {
         addNotification('재고가 부족합니다!', 'error');
         return;
