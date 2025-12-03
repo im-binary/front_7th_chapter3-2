@@ -1,4 +1,6 @@
 import { Product, CartItem } from '../../types';
+import { getRemainingStock as getStock } from '../models/cart';
+import { isOutOfStock } from '../models/product';
 
 export const formatPrice = (
   price: number,
@@ -7,8 +9,8 @@ export const formatPrice = (
   isAdmin: boolean
 ): string => {
   if (product) {
-    const remainingStock = getRemainingStock(product, cart);
-    if (remainingStock <= 0) {
+    const remainingStock = getStock({ product, cart });
+    if (isOutOfStock(remainingStock)) {
       return 'SOLD OUT';
     }
   }
@@ -18,14 +20,4 @@ export const formatPrice = (
   }
 
   return `₩${price.toLocaleString()}`;
-};
-
-export const getRemainingStock = (
-  product: Product,
-  cart: CartItem[]
-): number => {
-  const cartItem = cart.find((item) => item.product.id === product.id);
-  const remaining = product.stock - (cartItem?.quantity || 0);
-
-  return remaining;
 };
