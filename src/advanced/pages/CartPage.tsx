@@ -79,7 +79,13 @@ export const CartPage: React.FC<CartPageProps> = ({ searchTerm }) => {
   const handleCompleteOrder = () => {
     clearCart();
     setSelectedCoupon(null);
-    addNotification('주문이 완료되었습니다!', 'success');
+
+    const orderNumber = `ORD-${Date.now()}`;
+
+    addNotification(
+      `주문이 완료되었습니다.  주문번호: ${orderNumber}`,
+      'success'
+    );
   };
 
   return (
