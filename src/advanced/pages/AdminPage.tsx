@@ -1,35 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ProductWithUI } from '../hooks/useProducts';
-import { Coupon } from '../../types';
 import { CouponManagement, ProductManagement } from '../components/admin';
 import { Tabs } from '../components/primitives';
+import {
+  useProductsContext,
+  useCouponsContext,
+  useNotificationsContext,
+  useCartContext,
+} from '../contexts';
+import { formatCurrencyKRW } from '../utils/formatters';
+import { getRemainingStock } from '../models/cart';
+import { isOutOfStock } from '../models/product';
 
-interface AdminPageProps {
-  products: ProductWithUI[];
-  coupons: Coupon[];
-  formatPrice: (price: number, productId?: string) => string;
-  onAddProduct: (product: Omit<ProductWithUI, 'id'>) => void;
-  onUpdateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
-  onDeleteProduct: (productId: string) => void;
-  onAddCoupon: (coupon: Coupon) => void;
-  onDeleteCoupon: (couponCode: string) => void;
-  onAddNotification: (
-    message: string,
-    type: 'error' | 'success' | 'warning'
-  ) => void;
-}
+export const AdminPage: React.FC = () => {
+  const { products, addProduct, updateProduct, deleteProduct } =
+    useProductsContext();
+  const { coupons, addCoupon, deleteCoupon } = useCouponsContext();
+  const { addNotification } = useNotificationsContext();
+  const { cart } = useCartContext();
 
-export const AdminPage: React.FC<AdminPageProps> = ({
-  products,
-  coupons,
-  formatPrice,
-  onAddProduct,
-  onUpdateProduct,
-  onDeleteProduct,
-  onAddCoupon,
-  onDeleteCoupon,
-  onAddNotification,
-}) => {
   const [activeTab, setActiveTab] = useState<'products' | 'coupons'>(
     'products'
   );
@@ -50,6 +39,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({
     discountType: 'amount' as 'amount' | 'percentage',
     discountValue: 0,
   });
+
+  const formatPrice = useCallback(
+    (price: number, productId?: string): string => {
+      if (productId) {
+        const product = products.find((p) => p.id === productId);
+
+        if (product) {
+          const remainingStock = getRemainingStock({ product, cart });
+          if (isOutOfStock(remainingStock)) {
+            return 'SOLD OUT';
+          }
+        }
+      }
+
+      return formatCurrencyKRW(price);
+    },
+    [products, cart]
+  );
 
   const handleAddProductClick = () => {
     setEditingProduct('new');
@@ -86,9 +93,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({
     };
 
     if (editingProduct === 'new') {
-      onAddProduct(newProduct);
+      addProduct(newProduct);
+      addNotification('상품이 추가되었습니다.', 'success');
     } else if (editingProduct) {
-      onUpdateProduct(editingProduct, newProduct);
+      updateProduct(editingProduct, newProduct);
+      addNotification('상품이 수정되었습니다.', 'success');
     }
 
     setShowProductForm(false);
@@ -98,6 +107,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({
   const handleProductFormCancel = () => {
     setShowProductForm(false);
     setEditingProduct(null);
+  };
+
+  const handleDeleteProduct = (productId: string) => {
+    deleteProduct(productId);
+    addNotification('상품이 삭제되었습니다.', 'success');
   };
 
   const handleToggleCouponForm = () => {
@@ -114,7 +128,15 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
   const handleCouponSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onAddCoupon(couponForm);
+
+    const existingCoupon = coupons.find((c) => c.code === couponForm.code);
+    if (existingCoupon) {
+      addNotification('이미 존재하는 쿠폰 코드입니다.', 'error');
+      return;
+    }
+
+    addCoupon(couponForm);
+    addNotification('쿠폰이 추가되었습니다.', 'success');
     setShowCouponForm(false);
     setCouponForm({
       name: '',
@@ -126,6 +148,11 @@ export const AdminPage: React.FC<AdminPageProps> = ({
 
   const handleCouponFormCancel = () => {
     setShowCouponForm(false);
+  };
+
+  const handleDeleteCoupon = (couponCode: string) => {
+    deleteCoupon(couponCode);
+    addNotification('쿠폰이 삭제되었습니다.', 'success');
   };
 
   return (
@@ -150,24 +177,24 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           productForm={productForm}
           formatPrice={formatPrice}
           onEditProduct={handleEditProduct}
-          onDeleteProduct={onDeleteProduct}
+          onDeleteProduct={handleDeleteProduct}
           onAddProductClick={handleAddProductClick}
           onProductFormChange={setProductForm}
           onProductSubmit={handleProductSubmit}
           onProductFormCancel={handleProductFormCancel}
-          onAddNotification={onAddNotification}
+          onAddNotification={addNotification}
         />
       ) : (
         <CouponManagement
           coupons={coupons}
           showCouponForm={showCouponForm}
           couponForm={couponForm}
-          onDeleteCoupon={onDeleteCoupon}
+          onDeleteCoupon={handleDeleteCoupon}
           onToggleCouponForm={handleToggleCouponForm}
           onCouponFormChange={setCouponForm}
           onCouponSubmit={handleCouponSubmit}
           onCouponFormCancel={handleCouponFormCancel}
-          onAddNotification={onAddNotification}
+          onAddNotification={addNotification}
         />
       )}
     </div>

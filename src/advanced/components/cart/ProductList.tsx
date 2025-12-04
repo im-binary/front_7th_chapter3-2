@@ -7,7 +7,6 @@ import { getRemainingStock } from '../../models/cart';
 interface ProductListProps {
   products: ProductWithUI[];
   cart: CartItem[];
-  isAdmin: boolean;
   formatPrice: (price: number, productId?: string) => string;
   onAddToCart: (product: ProductWithUI) => void;
   searchTerm?: string;

@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { ProductWithUI } from '../hooks/useProducts';
-import { CartItem, Coupon } from '../../types';
+import { Coupon } from '../../types';
 import {
   ProductList,
   OrderSummary,
@@ -8,35 +8,27 @@ import {
   CouponSelectorContainer,
 } from '../components/cart';
 import { calculateCartTotal } from '../models/cart';
+import {
+  useProductsContext,
+  useCartContext,
+  useCouponsContext,
+  useNotificationsContext,
+} from '../contexts';
+import { formatCurrency } from '../utils/formatters';
+import { getRemainingStock } from '../models/cart';
+import { isOutOfStock } from '../models/product';
 
 interface CartPageProps {
-  products: ProductWithUI[];
-  cart: CartItem[];
-  coupons: Coupon[];
   searchTerm: string;
-  formatPrice: (price: number, productId?: string) => string;
-  onAddToCart: (product: ProductWithUI) => void;
-  onUpdateQuantity: (productId: string, newQuantity: number) => void;
-  onRemoveFromCart: (productId: string) => void;
-  onClearCart: () => void;
-  onAddNotification: (
-    message: string,
-    type: 'error' | 'success' | 'warning'
-  ) => void;
 }
 
-export const CartPage: React.FC<CartPageProps> = ({
-  products,
-  cart,
-  coupons,
-  searchTerm,
-  formatPrice,
-  onAddToCart,
-  onUpdateQuantity,
-  onRemoveFromCart,
-  onClearCart,
-  onAddNotification,
-}) => {
+export const CartPage: React.FC<CartPageProps> = ({ searchTerm }) => {
+  const { products } = useProductsContext();
+  const { cart, addToCart, updateQuantity, removeFromCart, clearCart } =
+    useCartContext();
+  const { coupons } = useCouponsContext();
+  const { addNotification } = useNotificationsContext();
+
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
 
   // 선택된 쿠폰이 삭제되면 선택 해제
@@ -48,6 +40,23 @@ export const CartPage: React.FC<CartPageProps> = ({
       setSelectedCoupon(null);
     }
   }, [coupons, selectedCoupon]);
+
+  const formatPrice = useCallback(
+    (price: number, productId?: string): string => {
+      if (productId) {
+        const product = products.find((p) => p.id === productId);
+        if (product) {
+          const remainingStock = getRemainingStock({ product, cart });
+          if (isOutOfStock(remainingStock)) {
+            return 'SOLD OUT';
+          }
+        }
+      }
+
+      return formatCurrency(price);
+    },
+    [products, cart]
+  );
 
   const filteredProducts = useMemo(() => {
     if (!searchTerm) {
@@ -66,10 +75,46 @@ export const CartPage: React.FC<CartPageProps> = ({
     return calculateCartTotal({ cart, selectedCoupon });
   }, [cart, selectedCoupon]);
 
+  const handleAddToCart = useCallback(
+    (product: ProductWithUI) => {
+      const remainingStock = getRemainingStock({ cart, product });
+      if (remainingStock <= 0) {
+        addNotification('재고가 부족합니다!', 'error');
+        return;
+      }
+
+      const existingItem = cart.find((item) => item.product.id === product.id);
+      if (existingItem && existingItem.quantity + 1 > product.stock) {
+        addNotification(`재고는 ${product.stock}개까지만 있습니다.`, 'error');
+        return;
+      }
+
+      addToCart(product);
+      addNotification('장바구니에 담았습니다', 'success');
+    },
+    [cart, addToCart, addNotification]
+  );
+
+  const handleUpdateQuantity = useCallback(
+    (productId: string, newQuantity: number) => {
+      const product = products.find((p) => p.id === productId);
+      if (!product) return;
+
+      const maxStock = product.stock;
+      if (newQuantity > maxStock) {
+        addNotification(`재고는 ${maxStock}개까지만 있습니다.`, 'error');
+        return;
+      }
+
+      updateQuantity(productId, newQuantity);
+    },
+    [products, updateQuantity, addNotification]
+  );
+
   const handleCompleteOrder = () => {
-    onClearCart();
+    clearCart();
     setSelectedCoupon(null);
-    onAddNotification('주문이 완료되었습니다!', 'success');
+    addNotification('주문이 완료되었습니다!', 'success');
   };
 
   return (
@@ -78,9 +123,8 @@ export const CartPage: React.FC<CartPageProps> = ({
         <ProductList
           products={filteredProducts}
           cart={cart}
-          isAdmin={false}
           formatPrice={formatPrice}
-          onAddToCart={onAddToCart}
+          onAddToCart={handleAddToCart}
           searchTerm={searchTerm}
         />
       </div>
@@ -89,8 +133,8 @@ export const CartPage: React.FC<CartPageProps> = ({
         <div className="sticky top-24 space-y-4">
           <CartSummary
             cart={cart}
-            onUpdateQuantity={onUpdateQuantity}
-            onRemoveFromCart={onRemoveFromCart}
+            onUpdateQuantity={handleUpdateQuantity}
+            onRemoveFromCart={removeFromCart}
           />
 
           {cart.length > 0 && (
