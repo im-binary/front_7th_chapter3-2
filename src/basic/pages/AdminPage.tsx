@@ -1,11 +1,7 @@
 import React from 'react';
 import { ProductWithUI } from '../hooks/useProducts';
 import { Coupon } from '../../types';
-import {
-  CouponManagement,
-  ProductFormModal,
-  ProductTable,
-} from '../components/admin';
+import { CouponManagement, ProductManagement } from '../components/admin';
 
 interface AdminPageProps {
   products: ProductWithUI[];
@@ -103,24 +99,20 @@ export const AdminPage: React.FC<AdminPageProps> = ({
       </div>
 
       {activeTab === 'products' ? (
-        <>
-          <ProductTable
-            products={products}
-            formatPrice={formatPrice}
-            onEditProduct={onEditProduct}
-            onDeleteProduct={onDeleteProduct}
-            onAddProduct={onAddProductClick}
-          />
-          <ProductFormModal
-            isVisible={showProductForm}
-            isEditing={editingProduct !== 'new'}
-            productForm={productForm}
-            onFormChange={onProductFormChange}
-            onSubmit={onProductSubmit}
-            onCancel={onProductFormCancel}
-            onAddNotification={onAddNotification}
-          />
-        </>
+        <ProductManagement
+          products={products}
+          showProductForm={showProductForm}
+          editingProduct={editingProduct}
+          productForm={productForm}
+          formatPrice={formatPrice}
+          onEditProduct={onEditProduct}
+          onDeleteProduct={onDeleteProduct}
+          onAddProductClick={onAddProductClick}
+          onProductFormChange={onProductFormChange}
+          onProductSubmit={onProductSubmit}
+          onProductFormCancel={onProductFormCancel}
+          onAddNotification={onAddNotification}
+        />
       ) : (
         <CouponManagement
           coupons={coupons}

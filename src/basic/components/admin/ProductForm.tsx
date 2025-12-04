@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface ProductFormModalProps {
+interface ProductFormProps {
   isVisible: boolean;
   isEditing: boolean;
   productForm: {
@@ -19,7 +19,7 @@ interface ProductFormModalProps {
   ) => void;
 }
 
-export const ProductFormModal: React.FC<ProductFormModalProps> = ({
+export const ProductForm: React.FC<ProductFormProps> = ({
   isVisible,
   isEditing,
   productForm,
@@ -31,7 +31,7 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="mt-6 p-6 border-t border-gray-200 bg-gray-50 rounded-lg">
+    <div className="p-6 border-t border-gray-200 bg-gray-50">
       <form onSubmit={onSubmit} className="space-y-4">
         <h3 className="text-lg font-medium text-gray-900">
           {isEditing ? '상품 수정' : '새 상품 추가'}
@@ -137,7 +137,6 @@ export const ProductFormModal: React.FC<ProductFormModalProps> = ({
             />
           </div>
         </div>
-
         {/* 할인 정책 */}
         <div className="mt-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
