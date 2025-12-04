@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ProductWithUI } from '../hooks/useProducts';
 import { Coupon } from '../../types';
 import { CouponManagement, ProductManagement } from '../components/admin';
@@ -7,36 +7,12 @@ import { Tabs } from '../components/primitives';
 interface AdminPageProps {
   products: ProductWithUI[];
   coupons: Coupon[];
-  activeTab: 'products' | 'coupons';
-  showProductForm: boolean;
-  showCouponForm: boolean;
-  editingProduct: string | null;
-  productForm: {
-    name: string;
-    price: number;
-    stock: number;
-    description: string;
-    discounts: Array<{ quantity: number; rate: number }>;
-  };
-  couponForm: {
-    name: string;
-    code: string;
-    discountType: 'amount' | 'percentage';
-    discountValue: number;
-  };
   formatPrice: (price: number, productId?: string) => string;
-  onSetActiveTab: (tab: 'products' | 'coupons') => void;
-  onEditProduct: (product: ProductWithUI) => void;
+  onAddProduct: (product: Omit<ProductWithUI, 'id'>) => void;
+  onUpdateProduct: (productId: string, updates: Partial<ProductWithUI>) => void;
   onDeleteProduct: (productId: string) => void;
-  onAddProductClick: () => void;
-  onProductFormChange: (form: any) => void;
-  onProductSubmit: (e: React.FormEvent) => void;
-  onProductFormCancel: () => void;
+  onAddCoupon: (coupon: Coupon) => void;
   onDeleteCoupon: (couponCode: string) => void;
-  onToggleCouponForm: () => void;
-  onCouponFormChange: (form: any) => void;
-  onCouponSubmit: (e: React.FormEvent) => void;
-  onCouponFormCancel: () => void;
   onAddNotification: (
     message: string,
     type: 'error' | 'success' | 'warning'
@@ -46,27 +22,112 @@ interface AdminPageProps {
 export const AdminPage: React.FC<AdminPageProps> = ({
   products,
   coupons,
-  activeTab,
-  showProductForm,
-  showCouponForm,
-  editingProduct,
-  productForm,
-  couponForm,
   formatPrice,
-  onSetActiveTab,
-  onEditProduct,
+  onAddProduct,
+  onUpdateProduct,
   onDeleteProduct,
-  onAddProductClick,
-  onProductFormChange,
-  onProductSubmit,
-  onProductFormCancel,
+  onAddCoupon,
   onDeleteCoupon,
-  onToggleCouponForm,
-  onCouponFormChange,
-  onCouponSubmit,
-  onCouponFormCancel,
   onAddNotification,
 }) => {
+  const [activeTab, setActiveTab] = useState<'products' | 'coupons'>(
+    'products'
+  );
+  const [showProductForm, setShowProductForm] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+  const [productForm, setProductForm] = useState({
+    name: '',
+    price: 0,
+    stock: 0,
+    description: '',
+    discounts: [] as Array<{ quantity: number; rate: number }>,
+  });
+
+  const [showCouponForm, setShowCouponForm] = useState(false);
+  const [couponForm, setCouponForm] = useState({
+    name: '',
+    code: '',
+    discountType: 'amount' as 'amount' | 'percentage',
+    discountValue: 0,
+  });
+
+  const handleAddProductClick = () => {
+    setEditingProduct('new');
+    setShowProductForm(true);
+    setProductForm({
+      name: '',
+      price: 0,
+      stock: 0,
+      description: '',
+      discounts: [],
+    });
+  };
+
+  const handleEditProduct = (product: ProductWithUI) => {
+    setEditingProduct(product.id);
+    setShowProductForm(true);
+    setProductForm({
+      name: product.name,
+      price: product.price,
+      stock: product.stock,
+      description: product.description || '',
+      discounts: product.discounts || [],
+    });
+  };
+
+  const handleProductSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const newProduct: Omit<ProductWithUI, 'id'> = {
+      ...productForm,
+      discounts: productForm.discounts.filter(
+        (d) => d.quantity > 0 && d.rate > 0
+      ),
+    };
+
+    if (editingProduct === 'new') {
+      onAddProduct(newProduct);
+    } else if (editingProduct) {
+      onUpdateProduct(editingProduct, newProduct);
+    }
+
+    setShowProductForm(false);
+    setEditingProduct(null);
+  };
+
+  const handleProductFormCancel = () => {
+    setShowProductForm(false);
+    setEditingProduct(null);
+  };
+
+  const handleToggleCouponForm = () => {
+    setShowCouponForm(!showCouponForm);
+    if (!showCouponForm) {
+      setCouponForm({
+        name: '',
+        code: '',
+        discountType: 'amount',
+        discountValue: 0,
+      });
+    }
+  };
+
+  const handleCouponSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onAddCoupon(couponForm);
+    setShowCouponForm(false);
+    setCouponForm({
+      name: '',
+      code: '',
+      discountType: 'amount',
+      discountValue: 0,
+    });
+  };
+
+  const handleCouponFormCancel = () => {
+    setShowCouponForm(false);
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
@@ -74,7 +135,7 @@ export const AdminPage: React.FC<AdminPageProps> = ({
         <p className="text-gray-600 mt-1">상품과 쿠폰을 관리할 수 있습니다</p>
       </div>
 
-      <Tabs value={activeTab} onChange={onSetActiveTab}>
+      <Tabs value={activeTab} onChange={setActiveTab}>
         <Tabs.List>
           <Tabs.Tab value="products">상품 관리</Tabs.Tab>
           <Tabs.Tab value="coupons">쿠폰 관리</Tabs.Tab>
@@ -88,12 +149,12 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           editingProduct={editingProduct}
           productForm={productForm}
           formatPrice={formatPrice}
-          onEditProduct={onEditProduct}
+          onEditProduct={handleEditProduct}
           onDeleteProduct={onDeleteProduct}
-          onAddProductClick={onAddProductClick}
-          onProductFormChange={onProductFormChange}
-          onProductSubmit={onProductSubmit}
-          onProductFormCancel={onProductFormCancel}
+          onAddProductClick={handleAddProductClick}
+          onProductFormChange={setProductForm}
+          onProductSubmit={handleProductSubmit}
+          onProductFormCancel={handleProductFormCancel}
           onAddNotification={onAddNotification}
         />
       ) : (
@@ -102,10 +163,10 @@ export const AdminPage: React.FC<AdminPageProps> = ({
           showCouponForm={showCouponForm}
           couponForm={couponForm}
           onDeleteCoupon={onDeleteCoupon}
-          onToggleCouponForm={onToggleCouponForm}
-          onCouponFormChange={onCouponFormChange}
-          onCouponSubmit={onCouponSubmit}
-          onCouponFormCancel={onCouponFormCancel}
+          onToggleCouponForm={handleToggleCouponForm}
+          onCouponFormChange={setCouponForm}
+          onCouponSubmit={handleCouponSubmit}
+          onCouponFormCancel={handleCouponFormCancel}
           onAddNotification={onAddNotification}
         />
       )}
