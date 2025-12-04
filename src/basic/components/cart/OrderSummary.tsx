@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../primitives';
 
 interface OrderSummaryProps {
   totalBeforeDiscount: number;
@@ -37,12 +38,14 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         </div>
       </div>
 
-      <button
+      <Button
+        variant="primary"
+        fullWidth
         onClick={onCompleteOrder}
-        className="w-full mt-4 py-3 bg-yellow-400 text-gray-900 rounded-md font-medium hover:bg-yellow-500 transition-colors"
+        className="mt-4 bg-yellow-400 hover:bg-yellow-500 text-gray-900"
       >
         {totalAfterDiscount.toLocaleString()}원 결제하기
-      </button>
+      </Button>
 
       <div className="mt-3 text-xs text-gray-500 text-center">
         <p>* 실제 결제는 이루어지지 않습니다</p>

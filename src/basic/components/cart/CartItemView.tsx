@@ -1,4 +1,5 @@
 import React from 'react';
+import { NumericStepper } from '../primitives';
 
 interface CartItemViewProps {
   /** 상품명 */
@@ -54,23 +55,17 @@ export const CartItemView: React.FC<CartItemViewProps> = ({
         </button>
       </div>
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <button
-            onClick={onDecrease}
-            className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100"
-          >
-            <span className="text-xs">−</span>
-          </button>
-          <span className="mx-3 text-sm font-medium w-8 text-center">
-            {quantity}
-          </span>
-          <button
-            onClick={onIncrease}
-            className="w-6 h-6 rounded border border-gray-300 flex items-center justify-center hover:bg-gray-100"
-          >
-            <span className="text-xs">+</span>
-          </button>
-        </div>
+        <NumericStepper
+          value={quantity}
+          onChange={(newValue) => {
+            if (newValue > quantity) {
+              onIncrease();
+            } else {
+              onDecrease();
+            }
+          }}
+          min={1}
+        />
         <div className="text-right">
           {hasDiscount && (
             <span className="text-xs text-red-500 font-medium block">
