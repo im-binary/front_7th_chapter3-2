@@ -15,23 +15,6 @@ export const isLowStock = (remainingStock: number) => {
 };
 
 /**
- * 상품 가격 포맷팅
- */
-export const formatProductPrice = ({
-  price,
-  isAdmin = false,
-}: {
-  price: number;
-  isAdmin?: boolean;
-}) => {
-  if (isAdmin) {
-    return `${price.toLocaleString()}원`;
-  }
-
-  return `₩${price.toLocaleString()}`;
-};
-
-/**
  * 상품의 최대 할인율 가져오기
  */
 export const getProductMaxDiscountRate = (product: Product) => {
