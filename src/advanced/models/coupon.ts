@@ -18,23 +18,6 @@ export const calculateCouponDiscount = ({
 };
 
 /**
- * 쿠폰 적용 가능 여부 확인
- */
-export const canApplyCoupon = ({
-  coupon,
-  totalAmount,
-}: {
-  coupon: Coupon;
-  totalAmount: number;
-}) => {
-  // percentage 쿠폰은 10,000원 이상만 사용 가능
-  if (coupon.discountType === 'percentage' && totalAmount < 10000) {
-    return false;
-  }
-  return true;
-};
-
-/**
  * 쿠폰 할인 후 금액 계산
  */
 export const applyCouponDiscount = ({
@@ -57,11 +40,4 @@ export const getCouponDisplayText = (coupon: Coupon): string => {
   } else {
     return `${coupon.discountValue}% 할인`;
   }
-};
-
-/**
- * 쿠폰 코드 유효성 검사
- */
-export const isValidCouponCode = (code: string): boolean => {
-  return code.length > 0 && /^[A-Z0-9]+$/.test(code);
 };

@@ -50,19 +50,6 @@ export const formatDiscountRate = (rate: number): string => {
 };
 
 /**
- * 할인 금액 계산
- */
-export const calculateDiscountAmount = ({
-  originalPrice,
-  discountRate,
-}: {
-  originalPrice: number;
-  discountRate: number;
-}) => {
-  return Math.round(originalPrice * discountRate);
-};
-
-/**
  * 할인 적용 후 가격 계산
  */
 export const applyDiscount = ({
