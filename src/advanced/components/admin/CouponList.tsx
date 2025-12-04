@@ -1,6 +1,7 @@
 import React from 'react';
 import { CouponCard } from './CouponCard';
 import { useCouponsContext } from '../../contexts';
+import { getCouponDisplayText } from '../../models/coupon';
 
 interface CouponListProps {
   onDeleteCoupon: (couponCode: string) => void;
@@ -16,17 +17,12 @@ export const CouponList: React.FC<CouponListProps> = ({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {coupons.map((coupon) => {
-        const discountText =
-          coupon.discountType === 'amount'
-            ? `${coupon.discountValue.toLocaleString()}원 할인`
-            : `${coupon.discountValue}% 할인`;
-
         return (
           <CouponCard
             key={coupon.code}
             name={coupon.name}
             code={coupon.code}
-            discountText={discountText}
+            discountText={getCouponDisplayText(coupon)}
             onDelete={() => onDeleteCoupon(coupon.code)}
           />
         );

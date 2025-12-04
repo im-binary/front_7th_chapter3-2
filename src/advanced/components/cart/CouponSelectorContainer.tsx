@@ -3,6 +3,7 @@ import { Coupon } from '../../../types';
 import { SelectOption } from '../primitives';
 import { CouponSelectorView } from './CouponSelectorView';
 import { useCouponsContext } from '../../contexts';
+import { getCouponDisplayText } from '../../models/coupon';
 
 interface CouponSelectorProps {
   selectedCoupon: Coupon | null;
@@ -14,13 +15,13 @@ export const CouponSelectorContainer: React.FC<CouponSelectorProps> = ({
   onSelectCoupon,
 }) => {
   const { coupons } = useCouponsContext();
+
   const couponOptions: SelectOption[] = coupons.map((coupon) => ({
     value: coupon.code,
-    label: `${coupon.name} (${
-      coupon.discountType === 'amount'
-        ? `${coupon.discountValue.toLocaleString()}원`
-        : `${coupon.discountValue}%`
-    })`,
+    label: `${coupon.name} (${getCouponDisplayText(coupon).replace(
+      ' 할인',
+      ''
+    )})`,
   }));
 
   const handleChange = (code: string) => {
