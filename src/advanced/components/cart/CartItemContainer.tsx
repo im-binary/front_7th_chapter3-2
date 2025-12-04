@@ -1,6 +1,7 @@
 import React from 'react';
 import { CartItem } from '../../../types';
 import { CartItemView } from './CartItemView';
+import { calculateDiscountRate } from '../../models/discount';
 
 interface CartItemContainerProps {
   item: CartItem;
@@ -17,10 +18,10 @@ export const CartItemContainer: React.FC<CartItemContainerProps> = ({
   onUpdateQuantity,
   onRemove,
 }) => {
-  const hasDiscount = itemTotal < originalPrice;
-  const discountRate = hasDiscount
-    ? Math.round((1 - itemTotal / originalPrice) * 100)
-    : 0;
+  const discountRate = calculateDiscountRate({
+    originalPrice,
+    discountedPrice: itemTotal,
+  });
 
   return (
     <CartItemView

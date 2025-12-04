@@ -74,3 +74,19 @@ export const applyDiscount = ({
 }) => {
   return Math.round(price * (1 - discountRate));
 };
+
+/**
+ * 할인율 계산 (원가와 할인가격으로부터)
+ */
+export const calculateDiscountRate = ({
+  originalPrice,
+  discountedPrice,
+}: {
+  originalPrice: number;
+  discountedPrice: number;
+}): number => {
+  if (originalPrice <= 0 || discountedPrice >= originalPrice) {
+    return 0;
+  }
+  return Math.round(((originalPrice - discountedPrice) / originalPrice) * 100);
+};

@@ -1,5 +1,5 @@
 import { CartItem, Product, Coupon } from '../../types';
-import { getMaxApplicableDiscount } from './discount';
+import { getMaxApplicableDiscount, applyDiscount } from './discount';
 import { applyCouponDiscount } from './coupon';
 
 /**
@@ -16,7 +16,7 @@ export const calculateItemTotal = ({
   const { quantity } = item;
   const discount = getMaxApplicableDiscount({ item, cart });
 
-  return Math.round(price * quantity * (1 - discount));
+  return applyDiscount({ price: price * quantity, discountRate: discount });
 };
 
 /**
