@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProductWithUI } from '../../hooks/useProducts';
-import { Section, Table, Button } from '../primitives';
+import { Table, Button } from '../primitives';
 
 interface ProductTableProps {
   products: ProductWithUI[];
@@ -84,19 +84,21 @@ export const ProductTable: React.FC<ProductTableProps> = ({
   ];
 
   return (
-    <Section
-      title="상품 목록"
-      action={
-        <Button variant="primary" size="md" onClick={onAddProduct}>
-          새 상품 추가
-        </Button>
-      }
-    >
+    <section className="bg-white rounded-lg border border-gray-200">
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold">상품 목록</h2>
+          <Button variant="primary" size="md" onClick={onAddProduct}>
+            새 상품 추가
+          </Button>
+        </div>
+      </div>
+
       <Table
         columns={columns}
         data={products}
         keyExtractor={(product) => product.id}
       />
-    </Section>
+    </section>
   );
 };
