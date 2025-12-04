@@ -1,6 +1,12 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Coupon } from '../types';
-import { Header } from './components/ui/Header';
+import {
+  Header,
+  Logo,
+  SearchBar,
+  CartBadge,
+  ToggleButton,
+} from './components/primitives';
 import { NotificationContainer } from './components/ui/Notification';
 import { ShoppingMallPage } from './pages/ShoppingMallPage';
 import { AdminPage } from './pages/AdminPage';
@@ -262,13 +268,27 @@ const App = () => {
         onClose={removeNotification}
       />
 
-      <Header
-        isAdmin={isAdmin}
-        onToggleAdmin={() => setIsAdmin(!isAdmin)}
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        cartItemCount={totalItemCount}
-      />
+      <Header>
+        <Header.Left>
+          <Logo text="SHOP" />
+          {!isAdmin && (
+            <SearchBar
+              value={searchTerm}
+              onChange={setSearchTerm}
+              placeholder="상품 검색..."
+            />
+          )}
+        </Header.Left>
+        <Header.Right>
+          <ToggleButton
+            isActive={isAdmin}
+            activeText="쇼핑몰로 돌아가기"
+            inactiveText="관리자 페이지로"
+            onClick={() => setIsAdmin(!isAdmin)}
+          />
+          {!isAdmin && <CartBadge count={totalItemCount} />}
+        </Header.Right>
+      </Header>
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         {isAdmin ? (
