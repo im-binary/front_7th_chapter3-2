@@ -3,10 +3,10 @@ import { ProductWithUI } from '../hooks/useProducts';
 import { CartItem, Coupon } from '../../types';
 import { calculateItemTotal } from '../models/cart';
 import {
-  CartItemContainer,
-  CouponSelector,
   ProductList,
   OrderSummary,
+  CartItemContainer,
+  CouponSelectorContainer,
 } from '../components/cart';
 
 interface CartPageProps {
@@ -113,7 +113,7 @@ export const CartPage: React.FC<CartPageProps> = ({
 
           {cart.length > 0 && (
             <>
-              <CouponSelector
+              <CouponSelectorContainer
                 coupons={coupons}
                 selectedCoupon={selectedCoupon}
                 onSelectCoupon={onSelectCoupon}

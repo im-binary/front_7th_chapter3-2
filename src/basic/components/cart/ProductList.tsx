@@ -1,5 +1,5 @@
 import React from 'react';
-import { ProductCard } from './ProductCard';
+import { ProductCardContainer } from './ProductCardContainer';
 import { ProductWithUI } from '../../hooks/useProducts';
 import { CartItem } from '../../../types';
 import { getRemainingStock } from '../../models/cart';
@@ -41,7 +41,7 @@ export const ProductList: React.FC<ProductListProps> = ({
           const remainingStock = getRemainingStock({ product, cart });
 
           return (
-            <ProductCard
+            <ProductCardContainer
               key={product.id}
               product={product}
               remainingStock={remainingStock}

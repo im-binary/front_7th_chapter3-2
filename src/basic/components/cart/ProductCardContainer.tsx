@@ -9,12 +9,7 @@ interface ProductCardProps {
   onAddToCart: (product: ProductWithUI) => void;
 }
 
-/**
- * ProductCard Container Component
- * - 비즈니스 로직: 최대 할인율 계산, 재고 상태 판단, 재고 메시지 생성
- * - Pure UI는 ProductCardView로 위임
- */
-export const ProductCard: React.FC<ProductCardProps> = ({
+export const ProductCardContainer: React.FC<ProductCardProps> = ({
   product,
   remainingStock,
   formatPrice,
