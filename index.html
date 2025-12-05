@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/front_7th_chapter3-2/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>항해99 7기 - Chapter 3-2 과제</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+          'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+          sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      
+      .container {
+        max-width: 800px;
+        width: 100%;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        padding: 60px 40px;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+        text-align: center;
+      }
+      
+      .subtitle {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 3rem;
+      }
+      
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+      
+      .card {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 30px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+      }
+      
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        border-color: #667eea;
+      }
+      
+      .card-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 1rem;
+      }
+      
+      .card-desc {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+      
+      .card-features {
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #ddd;
+      }
+      
+      .card-features li {
+        color: #666;
+        margin-bottom: 0.5rem;
+        padding-left: 1.5rem;
+        position: relative;
+      }
+      
+      .card-features li:before {
+        content: "✓";
+        position: absolute;
+        left: 0;
+        color: #667eea;
+        font-weight: bold;
+      }
+      
+      .badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: #667eea;
+        color: white;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+      
+      @media (max-width: 640px) {
+        .container {
+          padding: 40px 20px;
+        }
+        
+        h1 {
+          font-size: 2rem;
+        }
+        
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🚀 Chapter 3-2 과제</h1>
+      <p class="subtitle">React 리팩토링 & 상태 관리</p>
+      
+      <div class="cards">
+        <a href="./index.basic.html" class="card">
+          <div class="card-title">📦 Basic</div>
+          <div class="card-desc">
+            컴포넌트 리팩토링의 기초를 다지는 과제입니다.
+          </div>
+          <span class="badge">기본 과제</span>
+          <ul class="card-features">
+            <li>비즈니스 로직 분리</li>
+            <li>순수 함수 작성</li>
+            <li>Custom Hooks 활용</li>
+            <li>Container/View 패턴</li>
+          </ul>
+        </a>
+        
+        <a href="./index.advanced.html" class="card">
+          <div class="card-title">🎯 Advanced</div>
+          <div class="card-desc">
+            Context API로 Props Drilling을 제거하는 과제입니다.
+          </div>
+          <span class="badge">심화 과제</span>
+          <ul class="card-features">
+            <li>Context API 활용</li>
+            <li>Props Drilling 제거</li>
+            <li>페이지별 Provider 분리</li>
+            <li>컴포넌트 독립성 향상</li>
+          </ul>
+        </a>
+      </div>
+    </div>
+  </body>
+</html>
